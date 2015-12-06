@@ -23,7 +23,10 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	/* Point to process table entry for the current (old) process */
 
 	ptold = &proctab[currpid];
-
+	if(ptold->cpuflag && ptold->cpufun != NULL){
+		(ptold->cpufun)();
+		ptold->cpuflag = FALSE;
+	}
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
 		if (ptold->prprio > firstkey(readylist)) {
 			return;
@@ -42,7 +45,10 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	ptnew->prstate = PR_CURR;
 	preempt = QUANTUM;		/* Reset time slice for process	*/
 	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
-
+	if(ptold->prhasmsg && ptold->cbfun!=NULL) {
+   	 	(ptold->cbfun)();
+    	ptold->prhasmsg=FALSE;
+  	}
 	/* Old process returns here when resumed */
 
 	return;
