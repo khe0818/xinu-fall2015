@@ -7,8 +7,20 @@ void cb(){
   kprintf("pid %d rec at time %s\n", currpid, receive());
 }
 
+void cb1(){
+	kprintf("cputime %s, time 2 %s", proctab[currpid].cputimeused, proctab[currpid].cpuval );
+}
+
 process rec_process(){
   registercbsig(MYSIGRECV, &cb, 0);
+ // kprintf("pid %d is going to sleep at time %d\n",currpid, clktimefine);
+ // sleep(10000);
+  while(1); 
+}
+
+
+process cpu_process(){
+  registercbsig(MYSIGXCPU, &cb1, 500);
  // kprintf("pid %d is going to sleep at time %d\n",currpid, clktimefine);
  // sleep(10000);
   while(1); 
@@ -30,6 +42,8 @@ process	main(void)
 	pid32 p1 = create(rec_process, 4096, 20, "rec_test", 1, NULL);
 	resume(p1);
 	send(p1, "rec123");
+	pid32 p2 = create(cpu_process, 4096, 20, " cpu test", 1, NULL);
+	resume(p2);
 
 	/* Wait for shell to exit and recreate it */
 

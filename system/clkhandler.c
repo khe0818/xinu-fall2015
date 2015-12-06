@@ -24,7 +24,9 @@ void	clkhandler()
 	}
 
 	/* Handle sleeping processes if any exist */
-
+	if(proctab[currpid].cpuval == proctab[currpid].cputimeused){
+		proctab[currpid].cpuflag = TRUE;
+	}
 	if(!isempty(sleepq)) {
 
 		/* Decrement the delay for the first process on the	*/
